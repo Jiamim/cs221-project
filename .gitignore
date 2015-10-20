@@ -1,4 +1,5 @@
 # Specific to project
+tmp/
 *.n64
 
 # Mac OS X
