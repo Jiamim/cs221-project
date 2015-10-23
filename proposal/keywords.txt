@@ -1,0 +1,10 @@
+graph search
+A*
+MDP
+feature extraction
+classification
+logistic regression
+knn
+opencv
+pokemon
+video game

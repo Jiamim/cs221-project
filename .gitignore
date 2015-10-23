@@ -2,6 +2,12 @@
 tmp/
 *.n64
 
+# LaTeX
+*.aux
+*.fdb_latexmk
+*.synctex.gz
+proposal.out
+
 # Mac OS X
 .DS_Store
 
