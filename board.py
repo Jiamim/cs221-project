@@ -1,4 +1,5 @@
 from space import Piece
+import copy
 
 EMPTY = 0
 FIRE = 1
@@ -21,9 +22,16 @@ class Board:
     def __init__(self, inputRows=None, inputDeadBlocks=None, inputBoard=None):
         self.rows = []
         self.deadBlocks = []
+        self.backupRows = []
+        self.backupDeadBlocks = []
+        self.backupCursor = (5,2)
+        self.softRows = []
+        self.createBackUps()
         if inputBoard != None:
             for r in xrange(HEIGHT):
-                row = list(inputBoard.rows[r])
+                row = []
+                for tile in inputBoard.rows[r]:
+                    row.append(copy.copy(tile))
                 self.rows.append(row)
             self.cursor = inputBoard.cursor
             self.deadBlocks = list(inputBoard.deadBlocks)
@@ -41,6 +49,41 @@ class Board:
                     row.append(Piece(EMPTY))
                 self.rows.append(row)
             self.cursor = (5, 2)
+        self.commit()
+
+    def createBackUps(self):
+        for r in xrange(HEIGHT):
+            row = []
+            softRow = []
+            for c in xrange(WIDTH):
+                row.append(Piece(EMPTY))
+                softRow.append(Piece(EMPTY))
+            self.backupRows.append(row)
+            self.softRows.append(softRow)
+
+    def softCommit(self):
+        for r in xrange(HEIGHT):
+            for c in xrange(WIDTH):
+                self.softRows[r][c].setValue(self.rows[r][c].getValue())
+
+    def softRollback(self):
+        for r in xrange(HEIGHT):
+            for c in xrange(WIDTH):
+                self.rows[r][c].setValue(self.softRows[r][c].getValue())
+
+    def commit(self):
+        for r in xrange(HEIGHT):
+            for c in xrange(WIDTH):
+                self.backupRows[r][c].setValue(self.rows[r][c].getValue())
+        self.backupDeadBlocks = list(self.deadBlocks)
+        self.backupCursor = self.cursor
+
+    def rollback(self):
+        for r in xrange(HEIGHT):
+            for c in xrange(WIDTH):
+                self.rows[r][c].setValue(self.backupRows[r][c].getValue())
+        #self.deadBlocks = list(self.backupDeadBlocks)
+        #self.cursor = self.backupCursor
 
     # Apply gravity to the pieces in the board.
     # Drops any suspended pieces down
@@ -72,12 +115,80 @@ class Board:
                                 self.rows[peak+(r-chunk[0][0])][c].setValue(DEAD)
                                 self.rows[r][c].setValue(EMPTY)
 
+    def findMatches(self):
+        matches = []
+        # Check for horizontal matches
+        for r in xrange(HEIGHT):
+            matchStart = 0
+            matchType = self.rows[r][0].getValue()
+            for c in xrange(WIDTH):
+                # Check if current streak is a valid match
+                if FIRE <= matchType and matchType <= POKEBALL and \
+                   (self.rows[r][c].getValue() != matchType or c == WIDTH - 1):
+                    if c - matchStart > 2 or (self.rows[r][c].getValue() == matchType and c - matchStart > 1):
+                        match = []
+                        for i in xrange(matchStart, c):
+                            match.append((r,i))
+                        if c == WIDTH - 1:
+                            match.append((r,c))
+                        matches.append(match)
+                    matchStart = c
+                    matchType = self.rows[r][c].getValue()
+        # Check for vertical matches
+        for c in xrange(WIDTH):
+            matchStart = 0
+            matchType = self.rows[0][c].getValue()
+            for r in xrange(HEIGHT):
+                # Check if current streak is a valid match
+                if FIRE <= matchType and matchType <= POKEBALL and \
+                   (self.rows[r][c].getValue() != matchType or r == HEIGHT - 1):
+                    if r - matchStart > 2 or (self.rows[r][c].getValue() == matchType and r - matchStart > 1):
+                        match = []
+                        for i in xrange(matchStart, r):
+                            match.append((i,c))
+                        if r == HEIGHT - 1:
+                            match.append((r,c))
+                        matches.append(match)
+                    matchStart = r
+                    matchType = self.rows[r][c].getValue()
+        return matches
+
+    # Removes any matches from the board, if clear is specified changes these pieces to cleared pieces
+    def removeMatches(self, matches, clear=False):
+        for match in matches:
+            for r,c in match:
+                if clear:
+                    self.rows[r][c].setValue(CLEAR)
+                else:
+                    self.rows[r][c].setValue(EMPTY)
+
+    # Takes the board into its next stable state via applying gravity and removing matches
+    def processBoard(self):
+        self.applyGravity()
+        matches = self.findMatches()
+        while (len(matches) > 0):
+            self.removeMatches(matches)
+            self.applyGravity()
+            matches = self.findMatches()
+
     def findDeadBlock(self, deadPiece):
         for block in self.deadBlocks:
             if block[0][0] <= deadPiece[0] and block[0][1] <= deadPiece[1] \
                and block[1][0] >= deadPiece[0] and block[1][1] >= deadPiece[1]:
                 return block
         return None
+
+    # Swaps the piece at the specified position and the piece to its immediate right
+    # If move is invalid does nothing
+    def makeMove(self, position):
+        if position[0] >= HEIGHT or position[0] < 0 \
+           or position[1] >= WIDTH-1 or position[1] < 0:
+            print "Invalid Move"
+        else:
+            temp = self.rows[position[0]][position[1]].getValue()
+            self.rows[position[0]][position[1]].setValue(self.rows[position[0]][position[1]+1].getValue())
+            self.rows[position[0]][position[1]+1].setValue(temp)
+        
 
     # Sets a board's pieces to match those specified by inputRows
     def setFromRows(self, inputRows, inputDeadBlocks=[]):
@@ -101,6 +212,27 @@ class Board:
             secondCorner = deadBlock[1].split(",")
             self.deadBlocks.append(((int(firstCorner[0]), int(firstCorner[1])),\
                                     (int(secondCorner[0]),int(secondCorner[1]))))
+        self.commit()
+
+    # Evaluate function that returns the score for a board
+    def evaluate(self):
+        self.softCommit()
+        score = 0.0
+        chainLevel = 1
+        matches = self.findMatches()
+        while len(matches) > 0:
+            matchedTiles = set()
+            for match in matches:
+                for tile in match:
+                    matchedTiles.add(tile)
+            score += chainLevel * len(matchedTiles)
+            self.applyGravity()
+            self.removeMatches(matches)
+            self.applyGravity()
+            matches = self.findMatches()
+            chainLevel += 1
+        self.softRollback()
+        return score
 
     # Prints out a board
     def printBoard(self):
@@ -111,10 +243,23 @@ class Board:
             print rowString
         print "cursor: " + str(self.cursor)
 
-"""
+
 board = Board()
-board.loadFromFile('TestBoards/board3.txt')
+board.loadFromFile('TestBoards/test_board1.txt')
 board.printBoard()
 board.applyGravity()
 board.printBoard()
-"""
+matches = board.findMatches()
+board.removeMatches(matches)
+board.printBoard()
+board.applyGravity()
+board.printBoard()
+matches = board.findMatches()
+board.removeMatches(matches)
+board.printBoard()
+board.applyGravity()
+board.printBoard()
+
+
+
+
