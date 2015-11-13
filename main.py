@@ -10,14 +10,24 @@
 import board
 import brain
 import emulator
+import screenshot
+
+def initializeAll():
+  screenshot.initialize()
+  emulator.initialize()
+
+def shutdownAll():
+  emulator.shutdown()
+  screenshot.shutdown()
+
 
 def main():
+  initializeAll()
   print '[main.py] Running main program...'
-  emulator.initialize()
   ai = brain.BaselineBrain()
   emulator.run(ai)
-  emulator.shutdown()
   print '[main.py] Main program done.'
+
 
 if __name__ == '__main__':
   main()
