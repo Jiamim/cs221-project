@@ -10,7 +10,9 @@ from sklearn import linear_model
 import win32com.client
 
 import board
-from constants import *
+from common import *
+import keyboard
+import screenshot as screen
 import train
 
 WSHELL = None
@@ -27,8 +29,7 @@ elif MODEL_LOGREG:
 def run(brain):
   print '[emulator.py] Running game...'
   for i in xrange(100):
-    takeScreenshot()
-    screenshot = getScreenshot(remove_screenshot=True)
+    screenshot = screen.takeScreenshot()
     if gameHasEnded(screenshot):
       break
     boardImg = cropBoardFromScreenshot(screenshot)
@@ -53,15 +54,14 @@ def run(brain):
 def performAction(action):
   WSHELL.AppActivate(WINDOW_NAME)
   if action == KEY_UP:
-    key = '{UP}'
+    keyboard.UP(True)
   elif action == KEY_DOWN:
-    key = '{DOWN}'
+    keyboard.DOWN(True)
   elif action == KEY_LEFT:
-    key = '{LEFT}'
+    keyboard.LEFT(True)
   elif action == KEY_RIGHT:
-    key = '{RIGHT}'
-  WSHELL.SendKeys(key)
-  time.sleep(MOVE_DELAY_SECS)
+    keyboard.RIGHT(True)
+  keyboard.A(True)
 
 # Detect if the game has ended.
 def gameHasEnded(screenshot):
@@ -124,40 +124,6 @@ def getBoardBottom(img):
 def cropBoardFromScreenshot(img):
   return img[BOARD_Y:(BOARD_Y + BOARD_HEIGHT), BOARD_X:(BOARD_X + BOARD_WIDTH)]
 
-# Grab screenshot from directory.
-def getScreenshot(remove_screenshot=True):
-  img = None
-  for filename in os.listdir(SCREENSHOT_DIR):
-    if SCREENSHOT_PREFIX in filename:
-      # Read in image.
-      img = cv2.imread(os.path.join(SCREENSHOT_DIR, filename))
-      if img.shape != (600, 800, 3):
-        print '[emulator.py] ERROR: Set Project64 resolution to be 800x600'
-        sys.exit(1)
-      # Remove screenshot from directory.
-      if remove_screenshot:
-        os.remove(os.path.join(SCREENSHOT_DIR, filename))
-  if img == None:
-    print '[emulator.py] ERROR: Could not find screenshot in tmp/ directory.' +\
-          ' It is likely that the game is not running.'
-    sys.exit(1)
-  return img
-
-
-# Utility function.
-def debug_showImage(img, title='image'):
-  cv2.imshow(title, img)
-  key = cv2.waitKey(0)
-  cv2.destroyAllWindows()
-  if key == 27:
-    sys.exit()
-
-# Use win32 API to take send F3 key to Project64, which is the shortcut for
-# taking a screenshot.
-def takeScreenshot():
-  WSHELL.AppActivate(WINDOW_NAME)
-  WSHELL.SendKeys('{F3}')
-  time.sleep(SCREENSHOT_DELAY_SECS)
 
 # Start script.
 def initialize():
@@ -186,13 +152,23 @@ def initialize():
 def shutdown():
   pass
 
+import keyboard as tttt
 
 def test():
   WSHELL.AppActivate(WINDOW_NAME)
-  return
+  time.sleep(0.4)
+  t0 = time.time()
+  tttt.RIGHT()
+  tttt.RIGHT()
+  tttt.RIGHT()
+  tttt.DOWN()
+  tttt.DOWN()
+  tttt.DOWN()
+  tttt.DOWN()
+  print time.time() - t0
+  sys.exit(0)
 
-  takeScreenshot()
-  screenshot = getScreenshot(remove_screenshot=False)
+  screenshot = screen.takeScreenshot()
   screenshot = cv2.imread(os.path.join(DATA_FOLDER, 'snapENDGAME.jpg'))
   boardImg = cropBoardFromScreenshot(screenshot)
   gameHasEnded(boardImg)
@@ -200,7 +176,7 @@ def test():
   for square, rowIndex, colIndex in parseSquaresFromBoard(boardImg):
     img = cv2.resize(square, SQUARE_SIZE).astype(np.float32)
     img = img.reshape((1, NUM_PIXELS))
-    val, score = getSquareClassification(img)
+    val, score = getSquareClassiification(img)
     print val
     train.printVal((val))
     print score
@@ -208,6 +184,8 @@ def test():
     debug_showImage(square)
 
 if __name__ == '__main__':
+  screen.initialize()
   initialize()
   test()
   shutdown()
+  screen.shutdown()
