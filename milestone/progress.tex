@@ -7,7 +7,7 @@
 \usepackage{amsmath}
 \usepackage{subcaption}
 \usepackage{url}
-\usepackage[ruled,vlined,commentsnumbered,titlenotnumbered, norelsize]{algorithm2e}
+\usepackage[ruled,vlined,commentsnumbered,titlenotnumbered,norelsize]{algorithm2e}
 
 % Line break with additional spacing. Default is .75 line-height extra spacing
 % Extra space is put in to allow line breaks immediately after \item
@@ -107,23 +107,55 @@ append $child1, child2$ to $S'$ \\
 $S \gets S'$
 }
 return sequence in $S$ with best Evaluate() score\\
-\end{algorithm}
+\end{algorithm}\\
+An example output of our genetic algorithm can be seen in Section $8$.
 
 \section{Results}
-Before moving forward with the implementation of mapping keyboard inputs to perform the move sequences returned by our algorithms, we decided to focus on the tuning of our algorithm variables to yield a desirable balance between move optimality and processing time. Evaluation was performed by running out algorithms on randomly generated board states. The primary factors we focused on were move sequence and runtime.\br
-A description of our baseline and oracle are given in Section $4.3$ of our proposal. This section also gives baseline and oracle results for ``Versus'' mode. We add on that, in ``Endless'' mode, our baseline got an average score of $2460$, and our oracle got an average score of $18781$.
+Before robustly implementing the portion of our game interface which performs move sequences returned by our algorithms, we decided to focus on tuning our algorithm variables to yield a desirable balance between move optimality and processing time. Evaluation was performed by running our algorithms on randomly generated board states. The primary factors we focused on were move sequence and runtime. As can be seen in Figure~\ref{fig:randoms}, increasing the number of tested random sequences yields an increase in the resulting sequence score but also results in a linear increase in runtime. The increase in sequence score also seems to taper off as the number of tested sequences begins to exceed $1000$. Our results also demonstrated that modifying the number of moves in a sequence affects score and runtime similarly. An extra consideration that must be accounted for with this variable is that a longer sequence also requires more time to execute and thus is not as optimal as a shorter sequence which yields the same score.\br
+The Genetic Algorithm tended to yield significantly higher move sequence scores than the Random Algorithm. Varying the number of randomly generated sequences and the number of moves had a similar effect on the resulting runtime and score as in the Random Algorithm. However, as can be seen in Figure~\ref{fig:genetics}, increasing the number of generations did not result in large gains to score despite the increase in runtime. \br
+Given the nature of Pok\'{e}mon Puzzle League, an ideal maximum processing time would likely be around $4$-$5$ seconds. Further testing would be required to ensure that taking this amount of time to calculate a move sequence can result in a high level of play,. However, our preliminary results seem to indicate that the Genetic Algorithm approach would be able to achieve this goal while still returning strong move sequences.\br
+For completeness, a description of our baseline and oracle are given in Section $4.3$ of our proposal. This section also gives baseline and oracle results for ``Versus'' mode. We add on that, in ``Endless'' mode, our baseline got an average score of $2460$, and our oracle got an average score of $18781$.
 
 \section{Next Steps}
-We are pleased with our progress on our project so far. Our end-to-end system will have a lot of moving parts that must execute in quick cycles. We have already done much of the work and analysis to optimize the core code that calculates the best move. Finishing our robust interface for game communication is not a concern. As for our AI algorithm, there are still other ideas we would like to try to improve our results. In particular, we plan to account for:
+We are pleased with our progress on our project so far. Our end-to-end system will have a lot of moving parts that must execute in quick cycles. We have already done much of the work and analysis to optimize the core code that calculates the best move. Finishing our robust interface for game communication is not a concern. As for our AI algorithms, there are still other ideas we would like to try to improve our results. In particular, we plan to account for:
 \begin{itemize}
 \item Incorporating column height into our evaluation. A player loses the game even if one pesky column -- clearly higher than the rest -- reaches the top. Our AI may sometimes have to make switches which ``topple'' the column, even if the switch does not directly lead to any combos or chains.
 \item Supporting advanced timing techniques for dynamic chains. Gravity is not instantaneous after blocks are cleared. Many new chains are possible if a player can sneak key blocks beneath other falling blocks. This will need a fine-tuned game interface, with accuracy to the tenth of a second.
-\item Utilizing the existence of garbage blocks to improve our AI in ``Versus'' modes. Right now, we have one AI which works reasonably well in both modes. However, as mentioned earlier, in ``Versus'' mode, clearing garbage blocks is a priority. This means that we can optimize our $2$-player AI by accounting for garbage blocks. A stretch goal would be to analyze the opponent's board as well, to see what possible garbage blocks may be incoming.
+\item Utilizing the existence of garbage blocks to improve our AI in ``Versus'' modes. Right now, we have one general AI. However, as mentioned earlier, in ``Versus'' mode, clearing garbage blocks is a priority. This means that we can optimize our $2$-player AI by accounting for garbage blocks. A stretch goal would be to analyze the opponent's board as well, to see what possible garbage blocks may be incoming.
 \end{itemize}
 
 \newpage
 
-\section{Appendix}
+\section{Appendix 1}
+\begin{figure}[h]
+\begin{center}
+\begin{subfigure}[h]{3.2in}
+\includegraphics[width=3.2in]{randomScore.jpg}
+\end{subfigure}
+\begin{subfigure}[h]{3.2in}
+\includegraphics[width=3.2in]{randomTime.jpg}
+\end{subfigure}
+\caption{Score and runtime as functions of the number of tested randomly generated move sequences used in the Random Algorithm.}
+\label{fig:randoms}
+\end{center}
+\end{figure}
+
+\begin{figure}[h]
+\begin{center}
+\begin{subfigure}[h]{3.2in}
+\includegraphics[width=3.2in]{geneticScore.jpg}
+\end{subfigure}
+\begin{subfigure}[h]{3.2in}
+\includegraphics[width=3.2in]{geneticTime.jpg}
+\end{subfigure}
+\caption{Score and runtime as functions of the number of generations used in the Genetic Algorithm.}
+\label{fig:genetics}
+\end{center}
+\end{figure}
+
+\newpage
+
+\section{Appendix 2}
 Below is an example sequence produced by our genetic algorithm. As can be seen, it is capable of detecting complex setups that lead to large combos and long chains. To help locate block switches, we give the left coordinate of the cursor as (row, col), $0$-indexed, with $(0,0)$ as the bottom-left. The first four moves are quick block switches for setup.
 \begin{figure}[ht!]
 \centerline{
@@ -194,37 +226,4 @@ One last switch to start a great chain! About half of the blocks have been clear
 \includegraphics[width=1.3in]{inspirational12.png}
 \caption*{$4$x chain + $6$-combo!}
 \end{subfigure}}\end{figure}
-
-% \begin{figure}[h!]\begin{center}
-% \includegraphics[width=3.4in]{game.jpg}
-% \caption{Example game screen in $2$-player mode. The human player or agent is on the left.}
-% \label{fig:screenshot}
-% \end{center}\end{figure}
-% \begin{figure}[h!]\begin{center}
-% \begin{subfigure}[h]{1.6in}
-% \includegraphics[width=1.6in]{board.jpg}
-% \caption*{Isolate the agent's board.}
-% \end{subfigure}
-% ~$\mathbf{\Longrightarrow}$~
-% \begin{subfigure}[h]{1.6in}
-% \includegraphics[width=1.6in]{grid.jpg}
-% \caption*{Divide board into a grid.}
-% \end{subfigure}
-% ~$\mathbf{\Longrightarrow}$~
-% \begin{subfigure}[h]{1.2in}
-%   \begin{subfigure}[h]{.5in}
-%   \includegraphics[]{square0.jpg}
-%   \caption*{$(0,0)$}
-%   \end{subfigure}
-%   ~
-%   \begin{subfigure}[h]{.5in}
-%   \includegraphics[]{square1.jpg}
-%   \caption*{$(0,1)$}
-%   \end{subfigure}
-%   \caption*{Extract squares.}
-% \end{subfigure}
-% \caption{Process of parsing the grid game state from the game screen.}
-% \label{fig:extract}
-% \end{center}\end{figure}
-
 \end{document}
