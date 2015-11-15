@@ -1,0 +1,8 @@
+randomized algorithm
+genetic algorithm
+classification
+logistic regression
+knn
+opencv
+pokemon
+video game
