@@ -85,6 +85,21 @@ class Board:
         #self.deadBlocks = list(self.backupDeadBlocks)
         #self.cursor = self.backupCursor
 
+    def getColumnHeights(self):
+        colHeights = []
+        for c in xrange(WIDTH):
+            colh = 0
+            while (self.rows[colh][c].getValue() != EMPTY and colh < HEIGHT - 1):
+                colh = colh + 1
+            colHeights.append(colh)
+        return colHeights
+
+    def getColumnHeightsScore(self, colHeights):
+        score = 0.0
+        for colh in colHeights:
+            score = score + colh * colh * colh
+        return (score*1.0)/100
+
     # Apply gravity to the pieces in the board.
     # Drops any suspended pieces down
     def applyGravity(self):
