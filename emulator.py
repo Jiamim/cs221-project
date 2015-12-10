@@ -25,7 +25,7 @@ WSHELL = None
 #   MODEL_ENDGAME = linear_model.LogisticRegression(C=1e5)
 
 MOVE_WAIT = 0
-CLEAR_WAIT = 0.5
+CLEAR_WAIT = 2.4
 
 def run(brain):
   print '[emulator.py] Running game...'
@@ -71,7 +71,7 @@ def performMoves(moves, cursor_pos):
     controller.A()
     time.sleep(MOVE_WAIT)
     if clear:
-      time.sleep(CLEAR_WAIT)
+      time.sleep(clear * CLEAR_WAIT)
   return cursor_pos
 
 

@@ -20,9 +20,20 @@ class BaselineBrain(PPLBrain):
     max_col_index = 5
     moves = []
     for _ in range(5):
-      clear = False
+      clear = 0
       row_index = random.randint(0, max_row_index)
       col_index = random.randint(0, max_col_index)
       move = ((row_index, col_index), clear)
       moves.append(move)
+    return moves
+
+class TestSequencesBrain(PPLBrain):
+  # Return a manually set test move sequence
+  def getNextMoves(self, board):
+    moves = []
+    moves.append(((0,1), 0))
+    moves.append(((0,2), 1))
+    moves.append(((9,4), 1))
+    moves.append(((4,0), 0))
+    moves.append(((5,1), 4))
     return moves
