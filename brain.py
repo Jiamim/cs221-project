@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 
 import random
+import board
+import randomBrain
+import exhaustiveBrain
 
 # Abstract class, defining what needs to be implemented to be an AI.
 class PPLBrain:
@@ -37,3 +40,16 @@ class TestSequencesBrain(PPLBrain):
     moves.append(((4,0), 0))
     moves.append(((5,1), 4))
     return moves
+
+class RandomBrainBrain(PPLBrain):
+  # Return a sequence of moves as determined by the random brain
+  def getNextMoves(self, board):
+    rBrain = randomBrain.RandomBrain()
+    return rBrain.findBestActions(board)[1]
+
+class ExhaustiveBrainBrain(PPLBrain):
+  # Return a sequence of moves as determined by the random brain
+  def getNextMoves(self, board):
+    eBrain = exhaustiveBrain.ExhaustiveBrain()
+    return eBrain.findBestActions(board)[1]
+

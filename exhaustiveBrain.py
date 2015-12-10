@@ -12,7 +12,8 @@ class ExhaustiveBrain:
             locations.add(move)
             locations.add((move[0], move[1]+1))
             locations.update(inputBoard.applyGravity())
-            score += inputBoard.focusedEvaluate(locations)
+            tempScore, numClears = inputBoard.focusedEvaluate(locations)
+            score += tempScore
             #inputBoard.processBoard()
         inputBoard.rollback()
         return score
@@ -44,7 +45,20 @@ class ExhaustiveBrain:
             if score > bestScore:
                 bestScore = score
                 bestSequence = sequence
-        return bestScore, bestSequence
+        return bestScore, self.getSequenceClears(inputBoard, bestSequence)
+
+    def getSequenceClears(self, inputBoard, sequence):
+        finalMoves = []
+        for move in sequence:
+            inputBoard.makeMove(move)
+            locations = set()
+            locations.add(move)
+            locations.add((move[0], move[1]+1))
+            locations.update(inputBoard.applyGravity())
+            tempScore, numClears = inputBoard.focusedEvaluate(locations)
+            finalMoves.append((move, numClears))
+        inputBoard.rollback()
+        return finalMoves
 
 if __name__ == '__main__':
     testBoard = board.Board()
@@ -55,7 +69,7 @@ if __name__ == '__main__':
     exBrain = ExhaustiveBrain()
     score, actions = exBrain.findBestActions(testBoard)
     for action in actions:
-        testBoard.makeMove(action)
+        testBoard.makeMove(action[0])
         testBoard.printBoard()
         print ""
         testBoard.processBoard()

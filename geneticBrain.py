@@ -16,7 +16,8 @@ class GeneticBrain:
             locations.add(move)
             locations.add((move[0], move[1]+1))
             locations.update(inputBoard.applyGravity())
-            score += inputBoard.focusedEvaluate(locations)
+            tempScore, numClears = inputBoard.focusedEvaluate(locations)
+            score += tempScore
             #inputBoard.processBoard()
         inputBoard.rollback()
         return score
@@ -73,7 +74,21 @@ class GeneticBrain:
             if sequence[0] > bestScore:
                 bestScore = sequence[0]
                 bestSequence = sequence[1]
-        return self.getSequenceScore(inputBoard, bestSequence), bestSequence
+        return self.getSequenceScore(inputBoard, bestSequence), self.getSequenceClears(inputBoard, bestSequence)
+
+    def getSequenceClears(self, inputBoard, sequence):
+        finalMoves = []
+        for move in sequence:
+            inputBoard.makeMove(move)
+            locations = set()
+            locations.add(move)
+            locations.add((move[0], move[1]+1))
+            locations.update(inputBoard.applyGravity())
+            tempScore, numClears = inputBoard.focusedEvaluate(locations)
+            finalMoves.append((move, numClears))
+        inputBoard.rollback()
+        return finalMoves
+
 
 if __name__ == '__main__':
     testBoard = board.Board()
@@ -86,7 +101,7 @@ if __name__ == '__main__':
     score, actions = genBrain.findBestActions(testBoard)
     print "time: " + str(time.time() - start_time)
     for action in actions:
-        testBoard.makeMove(action)
+        testBoard.makeMove(action[0])
         testBoard.printBoard()
         print ""
         testBoard.processBoard()

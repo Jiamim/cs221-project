@@ -24,7 +24,7 @@ def shutdownAll():
 def main():
   initializeAll()
   print '[main.py] Running main program...'
-  ai = brain.BaselineBrain()
+  ai = brain.RandomBrainBrain()
   emulator.run(ai)
   print '[main.py] Main program done.'
 

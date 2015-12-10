@@ -79,7 +79,7 @@ def shutdown():
 
 def test():
   initialize()
-  A()
+  START()
   shutdown()
 
 if __name__ == '__main__':

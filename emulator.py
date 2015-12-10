@@ -13,8 +13,8 @@ import imgUtils
 import screenshot as screen
 from space import Piece
 
-MOVE_WAIT = 0.2
-CLEAR_WAIT = 2.4
+MOVE_WAIT = 0
+CLEAR_WAIT = 1
 
 def run(brain):
   print '[emulator.py] Running game...'
@@ -38,6 +38,7 @@ def run(brain):
 
     # Get next action and perform.
     b = board.Board(inputRows=inputRows)
+    b.printBoard()
     moves = brain.getNextMoves(b)
     controller.MASH_DOWN()
     cursor_pos = performMoves(moves, (0, 0))

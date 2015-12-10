@@ -293,7 +293,7 @@ class Board:
             matches = self.findMatches()
             chainLevel += 1
         #self.softRollback()
-        return score
+        return score, chainLevel - 1
 
     # Evaluate function that runs faster by only looking at changed locations
     def focusedEvaluate(self, locations):
@@ -310,7 +310,7 @@ class Board:
             matches = self.focusedFindMatches(matchedTiles)
             chainLevel += 1
         #self.softRollback()
-        return score
+        return score, chainLevel - 1
 
     def getMatchedTiles(self, matches):
         matchedTiles = set()
