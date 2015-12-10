@@ -4,6 +4,7 @@ import os
 import time
 
 import controller
+import cv2
 
 # Graphics Settings
 # - Auto adjust Window Size
@@ -14,17 +15,28 @@ import controller
 
 SCREENSHOT_DIR = os.path.expanduser('~/Library/Application Support/Dolphin/ScreenShots/NANE01')
 FILENAME = os.path.join(SCREENSHOT_DIR, 'NANE01-1.png')
-SCREENSHOT_WAIT = .2
+SCREENSHOT_WAIT = .25
+
+SCREENSHOT_SIZE = (716, 1280, 3)
 
 def initialize():
   pass
 
-# Returns OpenCV image
+# Returns OpenCV image. None if a screenshot wasn't taken quickly enough.
 def takeScreenshot():
+  if os.path.exists(FILENAME): os.remove(FILENAME)
   controller.D_DOWN()
   time.sleep(SCREENSHOT_WAIT)
-  assert os.path.exists(FILENAME)
-  os.remove(FILENAME)
+  img = cv2.imread(FILENAME)
+  if img != None:
+    assert img.shape == SCREENSHOT_SIZE
+  return img
+
+# Utility function to read a screenshot, without taking one or deleting anything
+def readScreenshot(filename=FILENAME):
+  img = cv2.imread(filename)
+  assert img.shape == SCREENSHOT_SIZE
+  return img
 
 def shutdown():
   pass

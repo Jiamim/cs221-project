@@ -6,7 +6,7 @@ import time
 # Device: Pipe/0/ppl
 
 PRESS_DELAY = 0.02
-TILT_DELAY = 0.02
+TILT_DELAY = 0.05
 
 NAMED_PIPE = os.path.expanduser('~/Library/Application Support/Dolphin/Pipes/ppl')
 PIPE = None
@@ -35,16 +35,25 @@ def MAIN_UP(): up('MAIN')
 def MAIN_DOWN(): down('MAIN')
 def MAIN_LEFT(): left('MAIN')
 def MAIN_RIGHT(): right('MAIN')
+def UP(): MAIN_UP()
+def DOWN(): MAIN_DOWN()
+def LEFT(): MAIN_LEFT()
+def RIGHT(): MAIN_RIGHT()
 def C_UP(): up('C')
 def C_DOWN(): down('C')
 def C_LEFT(): left('C')
 def C_RIGHT(): right('C')
+
+def MASH_UP(): up('MAIN', .35)
+def MASH_DOWN(): down('MAIN', .35)
+def MASH_RIGHT(): right('MAIN', .25)
+def MASH_LEFT(): left('MAIN', .25)
 ##### End ######
 
-def up(stick): tilt(stick, .5, 1)
-def down(stick): tilt(stick, .5, 0)
-def left(stick): tilt(stick, 0, .5)
-def right(stick): tilt(stick, 1, .5)
+def up(stick, delay=TILT_DELAY): tilt(stick, .5, 1, delay)
+def down(stick, delay=TILT_DELAY): tilt(stick, .5, 0, delay)
+def left(stick, delay=TILT_DELAY): tilt(stick, 0, .5, delay)
+def right(stick, delay=TILT_DELAY): tilt(stick, 1, .5, delay)
 
 def press(button):
   PIPE.write('PRESS %s\n' % button)
@@ -54,13 +63,14 @@ def press(button):
   PIPE.flush()
   time.sleep(PRESS_DELAY)
 
-def tilt(stick, x, y):
+def tilt(stick, x, y, delay=TILT_DELAY):
   PIPE.write('SET %s %.1f %.1f\n' % (stick, x, y))
   PIPE.flush()
-  time.sleep(TILT_DELAY)
+  time.sleep(delay)
   PIPE.write('SET %s .5 .5\n' % stick)
   PIPE.flush()
-  time.sleep(TILT_DELAY)
+  if delay == TILT_DELAY:
+    time.sleep(delay)
 
 def shutdown():
   PIPE.close()

@@ -14,14 +14,14 @@ class PPLBrain:
 
 
 class BaselineBrain(PPLBrain):
-  # Return a 5 random moves.
+  # Return a 25 random move sequence.
   def getNextMoves(self, board):
     max_row_index = 11
     max_col_index = 5
     moves = []
-    for _ in range(5):
+    for _ in range(25):
       clear = 0
-      row_index = random.randint(0, max_row_index)
+      row_index = random.randint(0, max_row_index - 4)
       col_index = random.randint(0, max_col_index)
       move = ((row_index, col_index), clear)
       moves.append(move)

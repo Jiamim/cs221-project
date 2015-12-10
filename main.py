@@ -2,13 +2,14 @@
 
 ## Runs the main program.
 
-import board
 import brain
 import controller
 import emulator
+import imgUtils
 import screenshot
 
 def initializeAll():
+  imgUtils.initialize()
   controller.initialize()
   screenshot.initialize()
   emulator.initialize()
@@ -17,6 +18,7 @@ def shutdownAll():
   emulator.shutdown()
   screenshot.shutdown()
   controller.shutdown()
+  imgUtils.shutdown()
 
 
 def main():
