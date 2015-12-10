@@ -183,7 +183,7 @@ class Board:
     def makeMove(self, position):
         if position[0] >= HEIGHT or position[0] < 0 \
            or position[1] >= WIDTH-1 or position[1] < 0:
-            print "Invalid Move"
+            print "Invalid Move , " + str((position[0], position[1]))
         else:
             temp = self.rows[position[0]][position[1]].getValue()
             self.rows[position[0]][position[1]].setValue(self.rows[position[0]][position[1]+1].getValue())
