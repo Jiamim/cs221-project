@@ -46,19 +46,20 @@ class ExhaustiveBrain:
                 bestSequence = sequence
         return bestScore, bestSequence
 
-testBoard = board.Board()
-testBoard.loadFromFile('TestBoards/random_board2.txt')
-testBoard.processBoard()
-testBoard.printBoard()
-print ""
-exBrain = ExhaustiveBrain()
-score, actions = exBrain.findBestActions(testBoard)
-for action in actions:
-    testBoard.makeMove(action)
+if __name__ == '__main__':
+    testBoard = board.Board()
+    testBoard.loadFromFile('TestBoards/random_board2.txt')
+    testBoard.processBoard()
     testBoard.printBoard()
     print ""
-    testBoard.processBoard()
-testBoard.printBoard()
-print ""
-print score
-print actions        
+    exBrain = ExhaustiveBrain()
+    score, actions = exBrain.findBestActions(testBoard)
+    for action in actions:
+        testBoard.makeMove(action)
+        testBoard.printBoard()
+        print ""
+        testBoard.processBoard()
+    testBoard.printBoard()
+    print ""
+    print score
+    print actions        

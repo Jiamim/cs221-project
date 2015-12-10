@@ -27,21 +27,21 @@ class RandomBrain:
             inputBoard.rollback()
         return bestScore, bestMoves
 
-
-testBoard = board.Board()
-testBoard.loadFromFile('TestBoards/random_board2.txt')
-testBoard.processBoard()
-testBoard.printBoard()
-print ""
-rndBrain = RandomBrain()
-score, actions = rndBrain.findBestActions(testBoard)
-for action in actions:
-    testBoard.makeMove(action)
+if __name__ == '__main__':
+    testBoard = board.Board()
+    testBoard.loadFromFile('TestBoards/random_board2.txt')
+    testBoard.processBoard()
     testBoard.printBoard()
     print ""
-    testBoard.processBoard()
-testBoard.printBoard()
-print ""
-print score
-print actions
+    rndBrain = RandomBrain()
+    score, actions = rndBrain.findBestActions(testBoard)
+    for action in actions:
+        testBoard.makeMove(action)
+        testBoard.printBoard()
+        print ""
+        testBoard.processBoard()
+    testBoard.printBoard()
+    print ""
+    print score
+    print actions
 

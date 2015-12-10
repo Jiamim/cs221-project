@@ -75,24 +75,24 @@ class GeneticBrain:
                 bestSequence = sequence[1]
         return self.getSequenceScore(inputBoard, bestSequence), bestSequence
 
-
-testBoard = board.Board()
-testBoard.loadFromFile('TestBoards/random_board2.txt')
-testBoard.processBoard()
-testBoard.printBoard()
-print ""
-genBrain = GeneticBrain()
-start_time = time.time()
-score, actions = genBrain.findBestActions(testBoard)
-print "time: " + str(time.time() - start_time)
-for action in actions:
-    testBoard.makeMove(action)
+if __name__ == '__main__':
+    testBoard = board.Board()
+    testBoard.loadFromFile('TestBoards/random_board1.txt')
+    testBoard.processBoard()
     testBoard.printBoard()
     print ""
-    testBoard.processBoard()
-testBoard.printBoard()
-print ""
-print score
-print actions
+    genBrain = GeneticBrain()
+    start_time = time.time()
+    score, actions = genBrain.findBestActions(testBoard)
+    print "time: " + str(time.time() - start_time)
+    for action in actions:
+        testBoard.makeMove(action)
+        testBoard.printBoard()
+        print ""
+        testBoard.processBoard()
+    testBoard.printBoard()
+    print ""
+    print score
+    print actions
 
         
