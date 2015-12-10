@@ -1,7 +1,8 @@
 import random
 import board
+import time
 
-NUMSEQUENCES = 200
+NUMSEQUENCES = 400
 NUMGENERATIONS = 5
 NUMMOVES = 8
 SCALE = 2.0
@@ -11,8 +12,12 @@ class GeneticBrain:
         score = 0
         for move in moves:
             inputBoard.makeMove(move)
-            score += inputBoard.evaluate()
-            inputBoard.processBoard()
+            locations = set()
+            locations.add(move)
+            locations.add((move[0], move[1]+1))
+            locations.update(inputBoard.applyGravity())
+            score += inputBoard.focusedEvaluate(locations)
+            #inputBoard.processBoard()
         inputBoard.rollback()
         return score
     
@@ -77,7 +82,9 @@ testBoard.processBoard()
 testBoard.printBoard()
 print ""
 genBrain = GeneticBrain()
+start_time = time.time()
 score, actions = genBrain.findBestActions(testBoard)
+print "time: " + str(time.time() - start_time)
 for action in actions:
     testBoard.makeMove(action)
     testBoard.printBoard()

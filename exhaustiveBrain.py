@@ -8,8 +8,12 @@ class ExhaustiveBrain:
         score = 0
         for move in moves:
             inputBoard.makeMove(move)
-            score += inputBoard.evaluate()
-            inputBoard.processBoard()
+            locations = set()
+            locations.add(move)
+            locations.add((move[0], move[1]+1))
+            locations.update(inputBoard.applyGravity())
+            score += inputBoard.focusedEvaluate(locations)
+            #inputBoard.processBoard()
         inputBoard.rollback()
         return score
 

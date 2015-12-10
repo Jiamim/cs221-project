@@ -88,6 +88,7 @@ class Board:
     # Apply gravity to the pieces in the board.
     # Drops any suspended pieces down
     def applyGravity(self):
+        fallenTiles = set()
         fallHeight = []
         for c in xrange(WIDTH):
             fallHeight.append(0)
@@ -97,6 +98,7 @@ class Board:
                 if FIRE <= self.rows[r][c].getValue():
                     if fallHeight[c] < r and self.rows[r][c].getValue() <= POKEBALL:
                         self.rows[fallHeight[c]][c].setValue(self.rows[r][c].getValue())
+                        fallenTiles.add((fallHeight[c], c))
                         self.rows[r][c].setValue(EMPTY)
                     if self.rows[r][c].getValue() == DEAD:
                         deadBlock = self.findDeadBlock((r,c))
@@ -114,6 +116,7 @@ class Board:
                             for r in xrange(chunk[0][0], chunk[1][0]+1):
                                 self.rows[peak+(r-chunk[0][0])][c].setValue(DEAD)
                                 self.rows[r][c].setValue(EMPTY)
+        return fallenTiles
 
     def findMatches(self):
         matches = []
@@ -129,9 +132,12 @@ class Board:
                         match = []
                         for i in xrange(matchStart, c):
                             match.append((r,i))
-                        if c == WIDTH - 1:
+                        if c == WIDTH - 1 and self.rows[r][c].getValue() == matchType:
                             match.append((r,c))
                         matches.append(match)
+                    matchStart = c
+                    matchType = self.rows[r][c].getValue()
+                if matchType == EMPTY:
                     matchStart = c
                     matchType = self.rows[r][c].getValue()
         # Check for vertical matches
@@ -146,12 +152,64 @@ class Board:
                         match = []
                         for i in xrange(matchStart, r):
                             match.append((i,c))
-                        if r == HEIGHT - 1:
+                        if r == HEIGHT - 1 and self.rows[r][c].getValue() == matchType:
                             match.append((r,c))
                         matches.append(match)
                     matchStart = r
                     matchType = self.rows[r][c].getValue()
+                if matchType == EMPTY:
+                    matchStart = r
+                    matchType = self.rows[r][c].getValue()
         return matches
+
+    # Find matches that only looks at locations where pieces were changed
+    def focusedFindMatches(self, locations):
+        matches = []
+        horizontalViewedTiles = set()
+        verticalViewedTiles = set()
+        for startR, startC in locations:
+            horizontalViewedTiles.add((startR, startC))
+            verticalViewedTiles.add((startR, startC))
+            matchType = self.rows[startR][startC].getValue()
+            if matchType < FIRE or matchType > POKEBALL:
+                continue
+            # Check for horizontal match going through the location
+            rightIndex = 0
+            while startC + rightIndex+1 <= WIDTH - 1 and \
+                   self.rows[startR][startC + rightIndex+1].getValue() == matchType and \
+                   (startR, startC + rightIndex+1) not in horizontalViewedTiles:
+                rightIndex = rightIndex + 1
+            leftIndex = 0
+            while startC + leftIndex-1 >= 0 and \
+                  self.rows[startR][startC + leftIndex-1].getValue() == matchType and \
+                  (startR, startC + leftIndex-1) not in horizontalViewedTiles:
+                leftIndex = leftIndex - 1
+            if rightIndex - leftIndex >= 2:
+                match = []
+                for i in xrange(startC+leftIndex,startC+rightIndex+1):
+                    horizontalViewedTiles.add((startR, i))
+                    match.append((startR, i))
+                matches.append(match)
+                
+            # Check for vertical match going through the location
+            upIndex = 0
+            while startR + upIndex+1 <= HEIGHT - 1 and \
+                   self.rows[startR + upIndex+1][startC].getValue() == matchType and \
+                   (startR + upIndex+1, startC) not in verticalViewedTiles:
+                upIndex = upIndex + 1
+            downIndex = 0
+            while startR + downIndex-1 >= 0 and \
+                  self.rows[startR + downIndex-1][startC].getValue() == matchType and \
+                  (startR + downIndex-1, startC) not in verticalViewedTiles:
+                downIndex = downIndex - 1
+            if upIndex - downIndex >= 2:
+                match = []
+                for i in xrange(startR+downIndex,startR+upIndex+1):
+                    verticalViewedTiles.add((i, startC))
+                    match.append((i, startC))
+                matches.append(match)
+        return matches
+        
 
     # Removes any matches from the board, if clear is specified changes these pieces to cleared pieces
     def removeMatches(self, matches, clear=False):
@@ -167,9 +225,12 @@ class Board:
         self.applyGravity()
         matches = self.findMatches()
         while (len(matches) > 0):
+            #print matches
             self.removeMatches(matches)
             self.applyGravity()
+            #self.printBoard()
             matches = self.findMatches()
+            #print matches
 
     def findDeadBlock(self, deadPiece):
         for block in self.deadBlocks:
@@ -216,7 +277,7 @@ class Board:
 
     # Evaluate function that returns the score for a board
     def evaluate(self):
-        self.softCommit()
+        #self.softCommit()
         score = 0.0
         chainLevel = 1
         matches = self.findMatches()
@@ -231,8 +292,31 @@ class Board:
             self.applyGravity()
             matches = self.findMatches()
             chainLevel += 1
-        self.softRollback()
+        #self.softRollback()
         return score
+
+    # Evaluate function that runs faster by only looking at changed locations
+    def focusedEvaluate(self, locations):
+        #self.softCommit()
+        score = 0.0
+        chainLevel = 1
+        matches = self.focusedFindMatches(locations)
+        while len(matches) > 0:
+            matchedTiles = self.getMatchedTiles(matches)
+            score += chainLevel * len(matchedTiles)
+            matchedTiles.update(self.applyGravity())
+            self.removeMatches(matches)
+            matchedTiles.update(self.applyGravity())
+            matches = self.focusedFindMatches(matchedTiles)
+            chainLevel += 1
+        #self.softRollback()
+        return score
+
+    def getMatchedTiles(self, matches):
+        matchedTiles = set()
+        for match in matches:
+            matchedTiles.update(set(match))
+        return matchedTiles
 
     # Prints out a board
     def printBoard(self):
@@ -248,15 +332,48 @@ if __name__ == '__main__':
     board = Board()
     board.loadFromFile('TestBoards/test_board1.txt')
     board.printBoard()
-    board.applyGravity()
-    board.printBoard()
+    #board.applyGravity()
+    #board.printBoard()
+    #board.processBoard()
+    #board.printBoard()
     matches = board.findMatches()
     board.removeMatches(matches)
     board.printBoard()
     board.applyGravity()
     board.printBoard()
-    matches = board.findMatches()
+    """
+    changedLocations = set()
+    changedLocations.add((8,4))
+    changedLocations.add((8,5))
+    print board.focusedEvaluate(changedLocations)
+    matches = board.focusedFindMatches(changedLocations)
+    #matches = board.findMatches()
+    board.removeMatches(matches)
+    changedLocations = board.getMatchedTiles(matches)
+    board.printBoard()
+    changedLocations.update(board.applyGravity())
+    board.printBoard()
+    print changedLocations
+    matches = board.focusedFindMatches(changedLocations)
+    #matches = board.findMatches()
+    board.removeMatches(matches)
+    changedLocations = board.getMatchedTiles(matches)
+    board.printBoard()
+    changedLocations.update(board.applyGravity())
+    board.printBoard()
+    print changedLocations
+    matches = board.focusedFindMatches(changedLocations)
+    #matches = board.findMatches()
+    board.removeMatches(matches)
+    changedLocations = board.getMatchedTiles(matches)
+    board.printBoard()
+    changedLocations.update(board.applyGravity())
+    board.printBoard()
+    print changedLocations
+    matches = board.focusedFindMatches(changedLocations)
+    #matches = board.findMatches()
     board.removeMatches(matches)
     board.printBoard()
     board.applyGravity()
     board.printBoard()
+    """

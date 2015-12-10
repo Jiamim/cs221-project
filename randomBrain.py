@@ -1,21 +1,25 @@
 import random
 import board
 
-NUMTRIALS = 200
+NUMTRIALS = 1000
 
 class RandomBrain:
-    def findBestActions(self, inputBoard, numMoves=4):
+    def findBestActions(self, inputBoard, numMoves=8):
         bestScore = 0.0
         bestMoves = []
         for i in xrange(NUMTRIALS):
             score = 0.0
-            cost = 0
             moves = []
             for j in xrange(numMoves):
                 movePosition = (random.randint(0,board.HEIGHT-1),random.randint(0,board.WIDTH-2))
                 inputBoard.makeMove(movePosition)
-                score += inputBoard.evaluate()
-                inputBoard.processBoard()
+                locations = set()
+                locations.add(movePosition)
+                locations.add((movePosition[0], movePosition[1]+1))
+                locations.update(inputBoard.applyGravity())
+                score += inputBoard.focusedEvaluate(locations)
+                #score += inputBoard.evaluate()
+                #inputBoard.processBoard()
                 moves.append(movePosition)
             if score > bestScore:
                 bestScore = score
@@ -25,7 +29,7 @@ class RandomBrain:
 
 
 testBoard = board.Board()
-testBoard.loadFromFile('TestBoards/random_board1.txt')
+testBoard.loadFromFile('TestBoards/random_board2.txt')
 testBoard.processBoard()
 testBoard.printBoard()
 print ""
