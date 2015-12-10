@@ -2,23 +2,21 @@
 
 ## Runs the main program.
 
-## CONFIGURATION NEEDED
-# Set Project64 emulation resolution to 800x600
-# Set screenshot save directory to be cs221-project/tmp/
-# Do not change any ROM names
-
 import board
 import brain
+import controller
 import emulator
 import screenshot
 
 def initializeAll():
+  controller.initialize()
   screenshot.initialize()
   emulator.initialize()
 
 def shutdownAll():
   emulator.shutdown()
   screenshot.shutdown()
+  controller.shutdown()
 
 
 def main():

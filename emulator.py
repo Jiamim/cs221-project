@@ -4,51 +4,76 @@ import os
 import sys
 import time
 
-import cv2
+# import cv2
 import numpy as np
-from sklearn import linear_model
-import win32com.client
+# from sklearn import linear_model
 
 import board
-from common import *
-import keyboard
+import controller
 import screenshot as screen
-import train
+# import train
 
 WSHELL = None
 
 # Choose which model to use
-MODEL_KNEAREST, MODEL_LOGREG = False, True
-if MODEL_KNEAREST:
-  MODEL = cv2.ml.KNearest_create()
-  MODEL_ENDGAME = cv2.ml.KNearest_create()
-elif MODEL_LOGREG:
-  MODEL = linear_model.LogisticRegression(C=1e5)
-  MODEL_ENDGAME = linear_model.LogisticRegression(C=1e5)
+# MODEL_KNEAREST, MODEL_LOGREG = False, True
+# if MODEL_KNEAREST:
+#   MODEL = cv2.ml.KNearest_create()
+#   MODEL_ENDGAME = cv2.ml.KNearest_create()
+# elif MODEL_LOGREG:
+#   MODEL = linear_model.LogisticRegression(C=1e5)
+#   MODEL_ENDGAME = linear_model.LogisticRegression(C=1e5)
+
+MOVE_WAIT = 0
+CLEAR_WAIT = 0.5
 
 def run(brain):
   print '[emulator.py] Running game...'
+  cursor_pos = (0, 0)
+  for _ in range(10):
+    controller.MAIN_DOWN()
+    controller.MAIN_LEFT()
   for i in xrange(100):
     screenshot = screen.takeScreenshot()
-    if gameHasEnded(screenshot):
-      break
-    boardImg = cropBoardFromScreenshot(screenshot)
+    # if gameHasEnded(screenshot):
+    #   break
+    # boardImg = cropBoardFromScreenshot(screenshot)
 
-    # Generate board model.
-    inputRows = [[-1] * board.WIDTH for _ in range(board.HEIGHT)]
-    for square, rowIndex, colIndex in parseSquaresFromBoard(boardImg):
-      img = cv2.resize(square, SQUARE_SIZE).astype(np.float32)
-      img = img.reshape((1, NUM_PIXELS))
-      val, score = getSquareClassification(img)
-      inputRows[rowIndex][colIndex] = val
+    # # Generate board model.
+    # inputRows = [[-1] * board.WIDTH for _ in range(board.HEIGHT)]
+    # for square, rowIndex, colIndex in parseSquaresFromBoard(boardImg):
+    #   img = cv2.resize(square, SQUARE_SIZE).astype(np.float32)
+    #   img = img.reshape((1, NUM_PIXELS))
+    #   val, score = getSquareClassification(img)
+    #   inputRows[rowIndex][colIndex] = val
 
-    # Get next action and perform.
-    b = board.Board(inputRows=inputRows)
-    action = brain.getNextAction(b)
-    performAction(action)
+    # # Get next action and perform.
+    # b = board.Board(inputRows=inputRows)
+    moves = brain.getNextMoves(None)
+    cursor_pos = performMoves(moves, cursor_pos)
 
     # End loop.
   print '[emulator.py] Done running game.'
+
+def performMoves(moves, cursor_pos):
+  for move in moves:
+    next_pos, clear = move
+    row_delta, col_delta = (next_pos[0] - cursor_pos[0], next_pos[1] - cursor_pos[1])
+    if row_delta > 0:
+      for _ in range(row_delta): controller.MAIN_UP()
+    elif row_delta < 0:
+      for _ in range(-row_delta): controller.MAIN_DOWN()
+    if col_delta > 0:
+      for _ in range(col_delta): controller.MAIN_RIGHT()
+    elif col_delta < 0:
+      for _ in range(-col_delta): controller.MAIN_LEFT()
+    cursor_pos = next_pos
+    controller.A()
+    time.sleep(MOVE_WAIT)
+    if clear:
+      time.sleep(CLEAR_WAIT)
+  return cursor_pos
+
 
 # Send keys to Project64.
 def performAction(action):
@@ -127,32 +152,32 @@ def cropBoardFromScreenshot(img):
 
 # Start script.
 def initialize():
-  global WSHELL, MODEL
-  print '[emulator.py] Dispatching shell...'
-  WSHELL = win32com.client.Dispatch('WScript.Shell')
-  print '[emulator.py] Training models...'
-  samples = np.loadtxt(os.path.join(DATA_FOLDER, 'samples.data'), np.float32)
-  responses = np.loadtxt(os.path.join(DATA_FOLDER, 'responses.data'), np.int32)
-  responses = responses.reshape((responses.size, 1))
+  pass
+  # global WSHELL, MODEL
+  # print '[emulator.py] Dispatching shell...'
+  # WSHELL = win32com.client.Dispatch('WScript.Shell')
+  # print '[emulator.py] Training models...'
+  # samples = np.loadtxt(os.path.join(DATA_FOLDER, 'samples.data'), np.float32)
+  # responses = np.loadtxt(os.path.join(DATA_FOLDER, 'responses.data'), np.int32)
+  # responses = responses.reshape((responses.size, 1))
 
-  sample_end = np.loadtxt(os.path.join(DATA_FOLDER, 'sampleEND.data'),
-                          np.float32)
-  response_end = np.loadtxt(os.path.join(DATA_FOLDER, 'responseEND.data'),
-                            np.int32)
-  response_end = response_end.reshape((response_end.size, 1))
+  # sample_end = np.loadtxt(os.path.join(DATA_FOLDER, 'sampleEND.data'),
+  #                         np.float32)
+  # response_end = np.loadtxt(os.path.join(DATA_FOLDER, 'responseEND.data'),
+  #                           np.int32)
+  # response_end = response_end.reshape((response_end.size, 1))
 
-  if MODEL_KNEAREST:
-    MODEL.train(samples, cv2.ml.ROW_SAMPLE, responses)
-    MODEL_ENDGAME.train(sample_end, cv2.ml.ROW_SAMPLE, response_end)
-  elif MODEL_LOGREG:
-    MODEL.fit(samples, responses.ravel())
-    MODEL_ENDGAME.fit(sample_end, response_end.ravel())
-  print '[emulator.py] Initialization complete (%d samples).' % samples.shape[0]
+  # if MODEL_KNEAREST:
+  #   MODEL.train(samples, cv2.ml.ROW_SAMPLE, responses)
+  #   MODEL_ENDGAME.train(sample_end, cv2.ml.ROW_SAMPLE, response_end)
+  # elif MODEL_LOGREG:
+  #   MODEL.fit(samples, responses.ravel())
+  #   MODEL_ENDGAME.fit(sample_end, response_end.ravel())
+  # print '[emulator.py] Initialization complete (%d samples).' % samples.shape[0]
 
 def shutdown():
   pass
 
-import keyboard as tttt
 
 def test():
   WSHELL.AppActivate(WINDOW_NAME)
@@ -184,8 +209,9 @@ def test():
     debug_showImage(square)
 
 if __name__ == '__main__':
-  screen.initialize()
-  initialize()
-  test()
-  shutdown()
-  screen.shutdown()
+  pass
+  # screen.initialize()
+  # initialize()
+  # test()
+  # shutdown()
+  # screen.shutdown()

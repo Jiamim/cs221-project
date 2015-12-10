@@ -188,7 +188,7 @@ class Board:
             temp = self.rows[position[0]][position[1]].getValue()
             self.rows[position[0]][position[1]].setValue(self.rows[position[0]][position[1]+1].getValue())
             self.rows[position[0]][position[1]+1].setValue(temp)
-        
+
 
     # Sets a board's pieces to match those specified by inputRows
     def setFromRows(self, inputRows, inputDeadBlocks=[]):
@@ -244,22 +244,19 @@ class Board:
         print "cursor: " + str(self.cursor)
 
 
-board = Board()
-board.loadFromFile('TestBoards/test_board1.txt')
-board.printBoard()
-board.applyGravity()
-board.printBoard()
-matches = board.findMatches()
-board.removeMatches(matches)
-board.printBoard()
-board.applyGravity()
-board.printBoard()
-matches = board.findMatches()
-board.removeMatches(matches)
-board.printBoard()
-board.applyGravity()
-board.printBoard()
-
-
-
-
+if __name__ == '__main__':
+    board = Board()
+    board.loadFromFile('TestBoards/test_board1.txt')
+    board.printBoard()
+    board.applyGravity()
+    board.printBoard()
+    matches = board.findMatches()
+    board.removeMatches(matches)
+    board.printBoard()
+    board.applyGravity()
+    board.printBoard()
+    matches = board.findMatches()
+    board.removeMatches(matches)
+    board.printBoard()
+    board.applyGravity()
+    board.printBoard()
