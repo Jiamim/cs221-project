@@ -2,8 +2,8 @@ import random
 import board
 import time
 
-NUMSEQUENCES = 400
-NUMGENERATIONS = 5
+NUMSEQUENCES = 100
+NUMGENERATIONS = 4
 NUMMOVES = 8
 SCALE = 2.0
 
