@@ -14,13 +14,13 @@ import screenshot as screen
 from space import Piece
 
 MOVE_WAIT = 0
-CLEAR_WAIT = 0.1
+CLEAR_WAIT = 1
 
 def run(brain):
   print '[emulator.py] Running game...'
 
   for i in xrange(100):
-    #controller.MASH_UP()
+    controller.MASH_UP()
     controller.MASH_LEFT()
     screenshot = screen.takeScreenshot()
     if screenshot == None:
