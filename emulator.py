@@ -40,9 +40,12 @@ def run(brain):
 
     # Get next action and perform.
     b = board.Board(inputRows=inputRows)
+    print '---BOARD---'
     b.printBoard()
     moves = brain.getNextMoves(b)
+    print '---MOVES---'
     print moves
+    print ''
     cursor_pos = performMoves(moves, (0, 0))
 
     # End loop.

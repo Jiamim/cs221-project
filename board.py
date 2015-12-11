@@ -205,7 +205,7 @@ class Board:
                     horizontalViewedTiles.add((startR, i))
                     match.append((startR, i))
                 matches.append(match)
-                
+
             # Check for vertical match going through the location
             upIndex = 0
             while startR + upIndex+1 <= HEIGHT - 1 and \
@@ -224,7 +224,7 @@ class Board:
                     match.append((i, startC))
                 matches.append(match)
         return matches
-        
+
 
     # Removes any matches from the board, if clear is specified changes these pieces to cleared pieces
     def removeMatches(self, matches, clear=False):
@@ -347,7 +347,7 @@ class Board:
             for piece in row:
                 rowString += str(piece.getValue()) + " "
             print rowString
-        print "cursor: " + str(self.cursor)
+        # print "cursor: " + str(self.cursor)
 
 
 if __name__ == '__main__':
