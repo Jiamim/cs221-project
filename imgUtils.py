@@ -34,6 +34,7 @@ FEATURE_VECTOR_SIZE = NUM_PIXELS
 FEATURE_VECTOR_SIZE = 18
 
 BACKGROUND_IMG = None
+BACKGROUND_IMG_1PLAYER = None
 
 COLOR = (0, 255, 0)
 
@@ -80,6 +81,15 @@ def filterBackground(img):
         img[y, x] = 0
   return img
 
+def filterBackground1Player(img):
+  for y in xrange(BOARD_HEIGHT - 2 * int(SQUARE_HEIGHT)):
+    for x in xrange(BOARD_WIDTH):
+      background = BACKGROUND_IMG_1PLAYER[y, x]
+      pixel = img[y, x]
+      if sum(np.abs(background - pixel) <= 2) == 3:
+        img[y, x] = 0
+  return img
+
 def isFilteredPixel(square):
   num_rows, num_cols, _ = square.shape
   count = 0
@@ -91,9 +101,11 @@ def isFilteredPixel(square):
   return (float(count) / (num_rows * num_cols)) > 0.5
 
 def loadBackgroundComparison():
-  global BACKGROUND_IMG
+  global BACKGROUND_IMG, BACKGROUND_IMG_1PLAYER
   BACKGROUND_IMG = cv2.imread(os.path.join(train.DATA_FOLDER, 'background.png'))
   BACKGROUND_IMG = cropBoard2Player(BACKGROUND_IMG)
+  BACKGROUND_IMG_1PLAYER = cv2.imread(os.path.join(train.DATA_FOLDER, 'background1player.png'))
+  BACKGROUND_IMG_1PLAYER = cropBoard1Player(BACKGROUND_IMG_1PLAYER)
 
 # Detect if the game has ended.
 def gameHasEnded(screenshot):
@@ -149,6 +161,12 @@ def getSquareClassification(square, rowIndex=None, colIndex=None):
 # Extract board from screenshot.
 def cropBoard2Player(img):
   return img[BOARD_TOP:BOARD_BOTTOM, BOARD_LEFT:BOARD_RIGHT]
+
+# Extract board and resize
+def cropBoard1Player(img):
+  img = img[93:665, 455:886]
+  img = cv2.resize(img, (BOARD_WIDTH, BOARD_HEIGHT))
+  return img
 
 def resizeSquare(square):
   return cv2.resize(square, (SQUARE_RESHAPE_WIDTH, SQUARE_RESHAPE_HEIGHT))
@@ -212,16 +230,8 @@ def showImage(img):
 
 def test():
   initialize()
-  filename = os.path.join(train.DATA_FOLDER, 'train1.png')
-  grid = cropBoard2Player(cv2.imread(filename))
-  responses = [int(i) for i in np.loadtxt(train.RESPONSES_FILE)]
-  count = 0
-  for square, row, col in parseSquaresFromBoard(grid):
-    print calculateLuminance(square)
-    val, score = getSquareClassification(square)
-    print val, score
-    showImage(square)
-    count += 1
+  filename = os.path.join(train.DATA_FOLDER, '1player.png')
+  cropBoard1Player(cv2.imread(filename))
   shutdown()
 
 
