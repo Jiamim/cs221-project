@@ -298,10 +298,12 @@ class Board:
         matches = self.findMatches()
         while len(matches) > 0:
             matchedTiles = set()
-            for match in matches:
-                for tile in match:
-                    matchedTiles.add(tile)
-            score += chainLevel * len(matchedTiles)
+            matchedTiles = self.getMatchedTiles(matches)
+            if chainLevel > 1:
+                score += chainLevel * len(matchedTiles)
+            else:
+                for match in matches:
+                    score += len(match) - 2
             self.applyGravity()
             self.removeMatches(matches)
             self.applyGravity()
@@ -318,7 +320,11 @@ class Board:
         matches = self.focusedFindMatches(locations)
         while len(matches) > 0:
             matchedTiles = self.getMatchedTiles(matches)
-            score += chainLevel * len(matchedTiles)
+            if chainLevel > 1:
+                score += chainLevel * len(matchedTiles)
+            else:
+                for match in matches:
+                    score += len(match) - 2
             matchedTiles.update(self.applyGravity())
             self.removeMatches(matches)
             matchedTiles.update(self.applyGravity())

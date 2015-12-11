@@ -25,7 +25,7 @@ def initialize():
 # Returns OpenCV image. None if a screenshot wasn't taken quickly enough.
 def takeScreenshot():
   if os.path.exists(FILENAME): os.remove(FILENAME)
-  controller.D_DOWN()
+  controller.C_DOWN()
   time.sleep(SCREENSHOT_WAIT)
   img = cv2.imread(FILENAME)
   if img != None:

@@ -56,8 +56,8 @@ def performMoves(moves, cursor_pos):
       #for _ in range(row_delta): controller.MAIN_UP()
       for _ in range(row_delta): controller.D_UP()
     elif row_delta < 0:
-      for _ in range(-row_delta): controller.MAIN_DOWN()
-      #for _ in range(-row_delta): controller.D_DOWN()
+      #for _ in range(-row_delta): controller.MAIN_DOWN()
+      for _ in range(-row_delta): controller.D_DOWN()
     if col_delta > 0:
       #for _ in range(col_delta): controller.MAIN_RIGHT()
       for _ in range(col_delta): controller.D_RIGHT()
