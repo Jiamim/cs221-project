@@ -28,7 +28,7 @@ class GeneticBrain:
         for i in xrange(NUMSEQUENCES):
             moves = []
             for j in xrange(NUMMOVES):
-                movePosition = (random.randint(0,board.HEIGHT-1),random.randint(0,board.WIDTH-2))
+                movePosition = (random.randint(0,board.HEIGHT-2),random.randint(0,board.WIDTH-2))
                 moves.append(movePosition)
             score = self.getSequenceScore(inputBoard, moves)
             moveSequences.append((pow(score,SCALE),moves))

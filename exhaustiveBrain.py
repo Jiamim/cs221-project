@@ -21,7 +21,7 @@ class ExhaustiveBrain:
 
     def getAllMoves(self, inputBoard):
         moveSequences = []
-        for r in xrange(board.HEIGHT):
+        for r in xrange(board.HEIGHT-1):
             for c in xrange(board.WIDTH-1):
                 moveSequences.append((r, c))
         return moveSequences
