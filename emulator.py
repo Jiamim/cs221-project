@@ -20,8 +20,9 @@ def run(brain):
   print '[emulator.py] Running game...'
 
   for i in xrange(100):
-    controller.MASH_UP()
-    controller.MASH_LEFT()
+    for _ in range(12): controller.D_UP()
+    for _ in range(6): controller.D_LEFT()
+
     screenshot = screen.takeScreenshot()
     if screenshot == None:
       time.sleep(MOVE_WAIT)
@@ -29,13 +30,14 @@ def run(brain):
     if imgUtils.gameHasEnded(screenshot):
       break
     grid = imgUtils.cropBoard2Player(screenshot)
+    grid = imgUtils.filterBackground(grid)
 
-    controller.MASH_DOWN()
+    for _ in range(12): controller.D_DOWN()
 
     # Generate board model.
     inputRows = [[-1] * board.WIDTH for _ in range(board.HEIGHT)]
     for square, rowIndex, colIndex in imgUtils.parseSquaresFromBoard(grid):
-      val, score = imgUtils.getSquareClassification(square)
+      val, score = imgUtils.getSquareClassification(square, rowIndex, colIndex)
       inputRows[rowIndex][colIndex] = Piece(val)
 
     # Get next action and perform.

@@ -14,9 +14,22 @@ import screenshot
 
 DATA_FOLDER = 'data'
 
+TRAIN1_DATA = \
+  [3, 4, 4, 3, 1, 5,
+   1, 3, 1, 6, 6, 4,
+   2, 2, 5, 3, 1, 5,
+   3, 4, 4, 2, 4, 3,
+   1, 1, 6, 5, 1, 4,
+   3, 5, 4, 6, 6, 2,
+   1, 1, 4, 4, 2, 3,
+   2, 2, 3, 4, 2, 1,
+   4, 1, 3, 3, 5, 3,
+   4, 2, 5, 0, 6, 4,
+   8, 8, 8, 8, 8, 8,
+   0, 0, 0, 0, 0, 0]
+
 def main():
   print '[train.py] Be careful about running this!'
-  sys.exit(0)
 
   # trainEndGameDetection()
   # return
@@ -31,8 +44,8 @@ def printVal(val):
          6:'Pokeball', 7:'CLEAR', 8:'DEAD', 0:'EMPTY'}[val]
 
 
-SAMPLES_FILE = os.path.join(DATA_FOLDER, 'samples.data')
-RESPONSES_FILE = os.path.join(DATA_FOLDER, 'responses.data')
+SAMPLES_FILE = os.path.join(DATA_FOLDER, 'samplesColors.data')
+RESPONSES_FILE = os.path.join(DATA_FOLDER, 'responsesColors.data')
 
 def train(screenshot):
   # for filename in os.listdir(DATA_FOLDER):
@@ -43,19 +56,22 @@ def train(screenshot):
     samples = np.loadtxt(SAMPLES_FILE)
     responses = [int(i) for i in np.loadtxt(RESPONSES_FILE)]
   else:
-    samples = np.empty((0, imgUtils.NUM_PIXELS))
+    samples = np.empty((0, imgUtils.FEATURE_VECTOR_SIZE))
     responses = []
 
   grid = imgUtils.cropBoard2Player(screenshot)
 
+  index = 0
   for square, rowIndex, colIndex in imgUtils.parseSquaresFromBoard(grid):
-    cv2.imshow('%d, %d' % (colIndex, rowIndex), square)
-    # Enter the key corresponding to the board enums
-    key = cv2.waitKey(0)
-    if key == 27: break
-    val = int(chr(key))
-    printVal(val)
-    cv2.destroyAllWindows()
+    # cv2.imshow('%d, %d' % (colIndex, rowIndex), square)
+    # # Enter the key corresponding to the board enums
+    # key = cv2.waitKey(0)
+    # if key == 27: break
+    # val = int(chr(key))
+    # printVal(val)
+    # cv2.destroyAllWindows()
+    val = TRAIN1_DATA[index]
+    index += 1
     if val == board.CLEAR or val == board.EMPTY or val == board.DEAD: continue
 
     # Add to training data
