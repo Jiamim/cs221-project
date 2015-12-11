@@ -3,6 +3,7 @@
 import random
 import board
 import randomBrain
+import geneticBrain
 import exhaustiveBrain
 
 # Abstract class, defining what needs to be implemented to be an AI.
@@ -46,6 +47,12 @@ class RandomBrainBrain(PPLBrain):
   def getNextMoves(self, board):
     rBrain = randomBrain.RandomBrain()
     return rBrain.findBestActions(board)[1]
+
+class GeneticBrainBrain(PPLBrain):
+  # Return a sequence of moves as determined by the random brain
+  def getNextMoves(self, board):
+    gBrain = geneticBrain.GeneticBrain()
+    return gBrain.findBestActions(board)[1]
 
 class ExhaustiveBrainBrain(PPLBrain):
   # Return a sequence of moves as determined by the random brain

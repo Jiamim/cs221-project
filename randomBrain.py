@@ -5,6 +5,7 @@ NUMTRIALS = 400
 
 class RandomBrain:
     def findBestActions(self, inputBoard, numMoves=8):
+        #bestScore = -1*inputBoard.getColumnHeightsScore(inputBoard.getColumnHeights())
         bestScore = -100000
         bestMoves = []
         for i in xrange(NUMTRIALS):

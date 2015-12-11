@@ -15,6 +15,7 @@ class ExhaustiveBrain:
             tempScore, numClears = inputBoard.focusedEvaluate(locations)
             score += tempScore
             #inputBoard.processBoard()
+        score -= inputBoard.getColumnHeightsScore(inputBoard.getColumnHeights())
         inputBoard.rollback()
         return score
 
@@ -38,7 +39,7 @@ class ExhaustiveBrain:
                     newMoveSequences.append(newSequence)
 
             moveSequences = newMoveSequences
-        bestScore = 0
+        bestScore = -1*inputBoard.getColumnHeightsScore(inputBoard.getColumnHeights())
         bestSequence = []
         for sequence in moveSequences:
             score = self.getSequenceScore(inputBoard, sequence)

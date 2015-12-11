@@ -19,6 +19,7 @@ class GeneticBrain:
             tempScore, numClears = inputBoard.focusedEvaluate(locations)
             score += tempScore
             #inputBoard.processBoard()
+        score -= inputBoard.getColumnHeightsScore(inputBoard.getColumnHeights())
         inputBoard.rollback()
         return score
     
@@ -69,7 +70,8 @@ class GeneticBrain:
         for i in xrange(NUMGENERATIONS):
             moveSequences = self.newGeneration(inputBoard, moveSequences)
         bestSequence = []
-        bestScore = 0.0
+        #bestScore = -1*inputBoard.getColumnHeightsScore(inputBoard.getColumnHeights())
+        bestScore = -100000
         for sequence in moveSequences:
             if sequence[0] > bestScore:
                 bestScore = sequence[0]
