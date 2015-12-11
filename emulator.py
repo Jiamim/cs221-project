@@ -29,8 +29,10 @@ def run(brain):
       continue
     if imgUtils.gameHasEnded(screenshot):
       break
-    grid = imgUtils.cropBoard2Player(screenshot)
-    grid = imgUtils.filterBackground(grid)
+    # grid = imgUtils.cropBoard2Player(screenshot)
+    # grid = imgUtils.filterBackground(grid)
+    grid = imgUtils.cropBoard1Player(screenshot)
+    grid = imgUtils.filterBackground1Player(grid)
 
     # Generate board model.
     inputRows = [[-1] * board.WIDTH for _ in range(board.HEIGHT)]
