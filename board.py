@@ -98,7 +98,7 @@ class Board:
         score = 0.0
         for colh in colHeights:
             score = score + colh * colh * colh
-        return (score*1.0)/100
+        return (score*1.0)/1000
 
     # Apply gravity to the pieces in the board.
     # Drops any suspended pieces down

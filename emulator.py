@@ -14,7 +14,7 @@ import screenshot as screen
 from space import Piece
 
 MOVE_WAIT = 0
-CLEAR_WAIT = 1
+CLEAR_WAIT = 2
 
 def run(brain):
   print '[emulator.py] Running game...'
@@ -31,8 +31,6 @@ def run(brain):
       break
     grid = imgUtils.cropBoard2Player(screenshot)
     grid = imgUtils.filterBackground(grid)
-
-    for _ in range(12): controller.D_DOWN()
 
     # Generate board model.
     inputRows = [[-1] * board.WIDTH for _ in range(board.HEIGHT)]

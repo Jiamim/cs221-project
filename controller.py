@@ -5,8 +5,9 @@ import time
 
 # Device: Pipe/0/ppl
 
-PRESS_DELAY = 0.02
+PRESS_DELAY = 0.025
 TILT_DELAY = 0.05
+HOLD_DELAY = 0.8
 
 NAMED_PIPE = os.path.expanduser('~/Library/Application Support/Dolphin/Pipes/ppl')
 PIPE = None
@@ -72,6 +73,14 @@ def tilt(stick, x, y, delay=TILT_DELAY):
   if delay == TILT_DELAY:
     time.sleep(delay)
 
+def holdR():
+  PIPE.write('PRESS R\n')
+  PIPE.flush()
+  time.sleep(HOLD_DELAY)
+  PIPE.write('RELEASE R\n')
+  PIPE.flush()
+  time.sleep(HOLD_DELAY)
+
 def shutdown():
   PIPE.close()
   print '[controller.py] Closed named pipe writer.'
@@ -79,7 +88,7 @@ def shutdown():
 
 def test():
   initialize()
-  A()
+  START()
   shutdown()
 
 if __name__ == '__main__':

@@ -26,6 +26,7 @@ def initialize():
 def takeScreenshot():
   if os.path.exists(FILENAME): os.remove(FILENAME)
   controller.C_DOWN()
+  for _ in range(12): controller.D_DOWN()
   time.sleep(SCREENSHOT_WAIT)
   img = cv2.imread(FILENAME)
   if img != None:

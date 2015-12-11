@@ -23,6 +23,7 @@ def shutdownAll():
 
 def main():
   initializeAll()
+  controller.holdR()
   print '[main.py] Running main program...'
   ai = brain.RandomBrainBrain()
   emulator.run(ai)
