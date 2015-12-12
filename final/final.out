@@ -2,22 +2,29 @@
 \BOOKMARK [1][-]{section.2}{Related Work}{}% 2
 \BOOKMARK [2][-]{subsection.2.1}{Letter Recognition using Holland-Style Adaptive Classifiers \(Frey and Slate, 1991\)}{section.2}% 3
 \BOOKMARK [2][-]{subsection.2.2}{Building Controllers for Tetris \(Thiery and Scherrer, 2009\)}{section.2}% 4
-\BOOKMARK [2][-]{subsection.2.3}{TODO: Genetic algorithm}{section.2}% 5
-\BOOKMARK [1][-]{section.3}{Gameplay and Task Definition}{}% 6
-\BOOKMARK [2][-]{subsection.3.1}{Gameplay}{section.3}% 7
-\BOOKMARK [2][-]{subsection.3.2}{Task Definition}{section.3}% 8
-\BOOKMARK [2][-]{subsection.3.3}{Oracle and Baseline}{section.3}% 9
-\BOOKMARK [1][-]{section.4}{Approach}{}% 10
-\BOOKMARK [2][-]{subsection.4.1}{System Overview}{section.4}% 11
-\BOOKMARK [2][-]{subsection.4.2}{Game State Model}{section.4}% 12
-\BOOKMARK [1][-]{section.5}{Board Extraction}{}% 13
-\BOOKMARK [1][-]{section.6}{Algorithms}{}% 14
-\BOOKMARK [2][-]{subsection.6.1}{Board Evaluation}{section.6}% 15
-\BOOKMARK [2][-]{subsection.6.2}{Exhaustive Search}{section.6}% 16
-\BOOKMARK [2][-]{subsection.6.3}{Random Algorithm}{section.6}% 17
-\BOOKMARK [2][-]{subsection.6.4}{Genetic Algorithm}{section.6}% 18
-\BOOKMARK [1][-]{section.7}{Results and Analysis}{}% 19
-\BOOKMARK [1][-]{section.8}{Conclusion}{}% 20
-\BOOKMARK [2][-]{subsection.8.1}{Future Work}{section.8}% 21
-\BOOKMARK [1][-]{section.9}{Appendix}{}% 22
-\BOOKMARK [1][-]{section*.5}{References}{}% 23
+\BOOKMARK [1][-]{section.3}{Gameplay and Task Definition}{}% 5
+\BOOKMARK [2][-]{subsection.3.1}{Gameplay}{section.3}% 6
+\BOOKMARK [2][-]{subsection.3.2}{Task Definition}{section.3}% 7
+\BOOKMARK [2][-]{subsection.3.3}{Oracle and Baseline}{section.3}% 8
+\BOOKMARK [1][-]{section.4}{Approach}{}% 9
+\BOOKMARK [2][-]{subsection.4.1}{System Overview}{section.4}% 10
+\BOOKMARK [2][-]{subsection.4.2}{Game State Model}{section.4}% 11
+\BOOKMARK [1][-]{section.5}{Board Detection}{}% 12
+\BOOKMARK [2][-]{subsection.5.1}{Grid Extraction}{section.5}% 13
+\BOOKMARK [2][-]{subsection.5.2}{Block Classification}{section.5}% 14
+\BOOKMARK [1][-]{section.6}{Algorithms}{}% 15
+\BOOKMARK [2][-]{subsection.6.1}{Evaluation Function}{section.6}% 16
+\BOOKMARK [2][-]{subsection.6.2}{Exhaustive Search}{section.6}% 17
+\BOOKMARK [2][-]{subsection.6.3}{Random Algorithm}{section.6}% 18
+\BOOKMARK [2][-]{subsection.6.4}{Genetic Algorithm}{section.6}% 19
+\BOOKMARK [1][-]{section.7}{Results and Analysis}{}% 20
+\BOOKMARK [2][-]{subsection.7.1}{Algorithm Results}{section.7}% 21
+\BOOKMARK [2][-]{subsection.7.2}{Board Detection Error Analysis}{section.7}% 22
+\BOOKMARK [2][-]{subsection.7.3}{Algorithms Analysis}{section.7}% 23
+\BOOKMARK [3][-]{subsubsection.7.3.1}{Exhaustive Algorithm}{subsection.7.3}% 24
+\BOOKMARK [3][-]{subsubsection.7.3.2}{Random Algorithm}{subsection.7.3}% 25
+\BOOKMARK [3][-]{subsubsection.7.3.3}{Genetic Algorithm}{subsection.7.3}% 26
+\BOOKMARK [1][-]{section.8}{Conclusion}{}% 27
+\BOOKMARK [2][-]{subsection.8.1}{Future Work}{section.8}% 28
+\BOOKMARK [1][-]{section.9}{Appendix}{}% 29
+\BOOKMARK [1][-]{section*.13}{References}{}% 30
