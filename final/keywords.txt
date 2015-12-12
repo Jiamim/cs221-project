@@ -1,0 +1,11 @@
+randomized algorithm
+genetic algorithm
+tree search
+depth-limited search
+evaluation function
+classification
+logistic regression
+knn
+opencv
+pokemon
+video game

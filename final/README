@@ -1,0 +1,57 @@
+Training a Pokemon Puzzle League Champion
+Logan Short, Christopher Wong
+CS 221, Autumn 2015
+
+Code README
+-----------
+
+A copy of all of our code and data can be found at:
+https://github.com/crwong/cs221-project
+
+Our Python code interfaces with Pokemon Puzzle League being played via the
+Dolphin Emulator, which can be downloaded at https://dolphin-emu.org.
+
+This code has only been tested and run on Mac OSX with Dolphin v4.0-8315. It
+can be easily extended to any Linux-based OS with a Dolphin build of
+4.0-8065 or later.
+
+board.py: Game model.
+brain.py: Python interface for a specific AI algorithm.
+controller.py: Utility class to send controller inputs to Dolphin.
+emulator.py: Runs the main AI loop.
+exhaustiveBrain.py: Exhaustive search algorithm.
+geneticBrain.py: Genetic algorithm.
+imgUtils.py: Utility class to parse screenshots.
+main.py: Main program.
+randomBrain.py: General randomized algorithm.
+screenshot.py: Utility class to take in-game screenshots.
+space.py: Game model.
+train.py: Utility class to train for block classification.
+
+Extract the accompanying data.zip folder and place it in the directory with
+all of the code. All training has already been done, so the code, if set up
+correctly, should work "out of the box".
+
+To interface with Dolphin, perform the following steps:
+
+  1. Locate the Dolphin user folder. On Mac OSX, this is by default at
+     '~/Library/Application Support/Dolphin'.
+
+  2. Create a Pipes directory and a named pipe called 'ppl' in this directory.
+     >> cd ~/Library/Application Support/Dolphin
+     >> mkdir Pipes
+     >> cd Pipes
+     >> mkfifo ppl
+
+  3. Configure a 'Standard Controller' in port 1 using Pipes/0/ppl. Use
+     controller.py to register the appropriate controller commands.
+
+  4. Configure the screenshot hotkey in a manner similar to Step 3. By default,
+     screenshot.py uses C_DOWN.
+
+In emulator.py, un/comment the appropriate lines in 32-35 depending on which
+mode (1-player "Endless" or 2-player "Versus") is being played.
+
+When the game starts, run main.py from the command line. Debugging information
+will be printed real-time, including the parsed grid and upcoming move
+sequence.
